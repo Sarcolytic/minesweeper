@@ -1,4 +1,4 @@
-export class Preloader extends PIXI.utils.EventEmitter {
+export default class Preloader extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_RESOURCED_LOADED: string = 'onResourcedLoaded';
 
 	constructor() {

@@ -1,6 +1,6 @@
 import 'PIXI';
-import { Preloader } from './view/Preloader';
-import { MainMenuView } from './view/MainMenuView';
+import Preloader from './view/Preloader';
+import MainMenuView from './view/MainMenuView';
 import { GameConstants } from './utils/GameConstatnts';
 import GameModel from './model/GameModel';
 import GameView from './view/GameView';

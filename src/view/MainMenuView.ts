@@ -1,6 +1,6 @@
 import { GameConstants } from '../utils/GameConstatnts';
 
-export class MainMenuView extends PIXI.Container {
+export default class MainMenuView extends PIXI.Container {
 	public static readonly EVENT_BUTTON_CLICK: string = 'onButtonClicked';
 
 	constructor() {
