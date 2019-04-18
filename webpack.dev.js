@@ -1,7 +1,6 @@
 const merge = require('webpack-merge');
 const path = require('path');
 const webpackClean = require('clean-webpack-plugin');
-const webpack = require('webpack');
 const webpackCaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const webpackForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
 
@@ -18,10 +17,6 @@ module.exports = merge(common, {
 		new webpackCaseSensitivePathsPlugin(),
 		new webpackForkTsCheckerPlugin(),
 		new webpackClean([outputFolder]),
-		new webpack.DefinePlugin({
-			MODE_DEBUG: JSON.stringify(true),
-			VERSION: JSON.stringify('dev'),
-		})
 	],
 	devtool: 'inline-source-map',
 	devServer: {
