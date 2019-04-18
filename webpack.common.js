@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
 	entry: {
-		app: [path.resolve(__dirname, 'src/GameController.ts')],
+		app: [path.resolve(__dirname, 'src/Game.ts')],
 		vendor: ['PIXI']
 	},
 	optimization: {

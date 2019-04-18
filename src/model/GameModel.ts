@@ -1,6 +1,8 @@
 import CellModel from './CellModel';
 
 export default class GameModel extends PIXI.utils.EventEmitter {
+	public static readonly EVENT_CELL_OPENED: string = 'onCellOpened';
+
 	private static readonly MINES_COUNT: number = 10;
 	public static readonly FIELD_SIZE: number = 10;
 
@@ -17,7 +19,14 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 		this.gameStatus = GameModel.STATUS_PLAYING;
 		this.openedCellsCount = 0;
+
 		this.cells = [];
+		for (let i = 0; i < GameModel.FIELD_SIZE; i++) {
+			this.cells[i] = [];
+			for (let j = 0; j < GameModel.FIELD_SIZE; j++) {
+				this.cells[i][j] = new CellModel(i, j);
+			}
+		}
 	}
 
 	/**
@@ -31,10 +40,8 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		// Start the game
 		// TODO check status
 		if (this.openedCellsCount === 0) {
-
-			this.initField();
 			this.digMines(GameModel.MINES_COUNT, x, y);
-			// this.updateGameStatus(MinesweeperGame.STATUS_PLAYING);
+			this.updateGameStatus(GameModel.STATUS_PLAYING);
 		}
 
 		if (this.isCellOpen(x, y) || this.isCellFlagged(x, y)) {
@@ -50,16 +57,16 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 			return false;
 		}
 
-		// Add cell to openCells
-		this.cells[x][y].setOpened();
-		this.openedCellsCount++;
-
 		// Counting quantity of surrounding mines
 		const surroundingMines = this.countSurroundingMines(x, y);
 		this.cells[x][y].setSurroundingMines(surroundingMines);
 
+		// Add cell to openCells
+		this.cells[x][y].setOpened();
+		this.openedCellsCount++;
+
 		// Dispatching new eventDispatcher
-		// this.eventDispatcher.dispatchEvent(new CellEvent(MinesweeperGame.EVENT_CELL_OPENED, x, y));
+		this.emit(GameModel.EVENT_CELL_OPENED, x, y);
 
 		// Check for winning
 		if (this.isWin()) {
@@ -78,15 +85,6 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		return true;
 	}
 
-	public initField(): void {
-		for (let i = 0; i < GameModel.FIELD_SIZE; i++) {
-			this.cells[i] = [];
-			for (let j = 0; j < GameModel.FIELD_SIZE; j++) {
-				this.cells[i][j] = new CellModel(i, j);
-			}
-		}
-	}
-
 	public getField(): CellModel[][] {
 		return this.cells;
 	}
@@ -103,8 +101,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 			const y = Math.floor(Math.random() * mines);
 			const cellIsMined = this.isCellMined(x, y);
 
-			if (x !== initX || y !== initY && !cellIsMined) {
-
+			if ((x !== initX || y !== initY) && !cellIsMined) {
 				this.cells[x][y].setMined();
 				i += 1;
 			}
@@ -193,17 +190,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		return cells;
 	}
 
-	private setFlag(x: number, y: number): void {
-		if (this.isCellOpen(x, y)) {
-			return;
-		}
-
-		this.cells[x][y].setFlag(true);
-		// this.eventDispatcher.dispatchEvent(new CellEvent(MinesweeperGame.EVENT_CELL_MARKED, x, y));
-	}
-
 	public switchFlag(x: number, y: number): void {
-
 		if (this.isCellFlagged(x, y)) {
 			this.unsetFlag(x, y);
 		} else {
@@ -211,9 +198,12 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		}
 	}
 
+	private setFlag(x: number, y: number): void {
+		this.cells[x][y].setFlag(true);
+	}
+
 	private unsetFlag(x: number, y: number): void {
 		this.cells[x][y].setFlag(false);
-		// this.eventDispatcher.dispatchEvent(new CellEvent(MinesweeperGame.EVENT_CELL_UNMARKED, x, y));
 	}
 
 	private isCellOpen(x: number, y: number): boolean {
