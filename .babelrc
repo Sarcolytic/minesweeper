@@ -1,0 +1,19 @@
+{
+	"presets": [
+		["@babel/preset-env", {
+			"targets": {
+				"browsers": ["> 1% and last 2 versions and not ie 11 and not op_mini all"]
+			},
+			"modules": false,
+			"loose": true
+		}],
+		["@babel/preset-typescript", {
+			"allExtensions": true
+		}]
+	],
+	"plugins": [
+		"@babel/plugin-transform-runtime",
+		"@babel/proposal-class-properties",
+		"@babel/proposal-object-rest-spread"
+	]
+}

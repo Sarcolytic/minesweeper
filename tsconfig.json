@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"module": "esnext",
+		"target": "esnext",
+		"moduleResolution": "node",
+		"noEmit": true,
+		"strict": true,
+		"strictNullChecks": false,
+		"paths": {
+			"@interfaces/*": ["WebContent/src/interfaces/*"],
+			"@configs/*": ["WebContent/src/configs/*"],
+			"@controllers/*": ["WebContent/src/controllers/*"],
+			"@models/*": ["WebContent/src/models/*"],
+			"@views/*": ["WebContent/src/views/*"],
+			"@src/*": ["WebContent/src/*"]
+		},
+		"lib": [
+				"dom",
+				"esnext"
+		]
+	}
+}
