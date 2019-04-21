@@ -21,7 +21,7 @@ export default class GameController {
 	}
 
 	private onViewLeftClick(cellPosition: CellPositionInField): void {
-		this.model.openCell(cellPosition.row, cellPosition.column, false);
+		this.model.openCell(cellPosition, false);
 	}
 
 	private onViewRightClick(cellPosition: CellPositionInField): void {

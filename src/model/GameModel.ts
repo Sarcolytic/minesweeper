@@ -42,25 +42,26 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 	/**
 	 * Open the cell
-	 * @param {number} row - Opening cell row in field
-	 * @param {number} column - Opening cell column in field
+	 * @param {CellPositionInField} position - Opening cell position
 	 * @param {Boolean} recursion - True if the function called in recursion
 	 * @return {Boolean} - False in case cell is already opened
 	 */
-	public openCell(row: number, column: number, recursion: boolean): boolean {
+	public openCell(position: CellPositionInField, recursion: boolean): boolean {
 
 		// Start the game
 		if (this.gameState === GameModel.STATE_INIT) {
-			this.digMines(GameModel.MINES_COUNT, row, column);
+			this.digMines(GameModel.MINES_COUNT, position);
 			this.updateGameState(GameModel.STATE_PLAYING);
 		}
 
-		if (this.isCellOpen(row, column) || this.isCellFlagged(row, column)) {
+		const cell = this.getCell(position);
+
+		if (cell.isOpened() || cell.isFlagged()) {
 			return false;
 		}
 
 		// Change game state in case of mine detonating
-		if (this.isCellMined(row, column)) {
+		if (cell.isMined()) {
 			if (!recursion) {
 				this.lose();
 				return false;
@@ -69,14 +70,14 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		}
 
 		// Counting quantity of surrounding mines
-		const surroundingMines = this.countSurroundingMines(row, column);
-		this.cells[row][column].setSurroundingMines(surroundingMines);
+		const surroundingMines = this.countSurroundingMines(position);
+		cell.setSurroundingMines(surroundingMines);
 
 		// Add cell to openCells
-		this.cells[row][column].setOpened();
+		cell.setOpened();
 		this.openedCellsCount++;
 
-		this.emit(GameModel.EVENT_CELL_OPENED, row, column);
+		this.emit(GameModel.EVENT_CELL_OPENED, position);
 
 		// Check for winning
 		if (this.isWin()) {
@@ -85,10 +86,10 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 		if (surroundingMines === 0) {
 			// Gather cell's neighbors and launch recursion
-			const neighbors = this.getNeighbors(row, column);
+			const neighbors = this.getNeighbors(position.row, position.column);
 
 			for (let i = 0; i < neighbors.length; i++) {
-				this.openCell(neighbors[i].row, neighbors[i].column, true);
+				this.openCell(neighbors[i].getPosition(), true);
 			}
 		}
 
@@ -109,15 +110,15 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	/**
 	 * Creates and digs mines
 	 */
-	private digMines(mines: number, initX: number, initY: number): void {
+	private digMines(mines: number, initPosition: CellPositionInField): void {
 		let i = 0;
 		do {
-			const x = Math.floor(Math.random() * mines);
-			const y = Math.floor(Math.random() * mines);
-			const cellIsMined = this.isCellMined(x, y);
+			const row = Math.floor(Math.random() * mines);
+			const column = Math.floor(Math.random() * mines);
+			const cell = this.getCell({ row, column });
 
-			if ((x !== initX || y !== initY) && !cellIsMined) {
-				this.cells[x][y].setMined();
+			if ((row !== initPosition.row || column !== initPosition.column) && !cell.isMined()) {
+				cell.setMined();
 				i += 1;
 			}
 
@@ -127,14 +128,14 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	/**
 	 * How many mines around cell
 	 */
-	private countSurroundingMines(x: number, y: number): number {
+	private countSurroundingMines(position: CellPositionInField): number {
 
 		// Get neighbors cells
-		const neighborsCells = this.getNeighbors(x, y);
+		const neighborsCells = this.getNeighbors(position.row, position.column);
 		let mines = 0;
 
 		for (let i = 0; i < neighborsCells.length; i++) {
-			if (this.isCellMined(neighborsCells[i].row, neighborsCells[i].column)) {
+			if (neighborsCells[i].isMined()) {
 				mines++;
 			}
 		}
@@ -146,50 +147,47 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	 * Get neighbors of the cell
 	 * @param {number} initRow - Opening cell row in field
 	 * @param {number} initColumn - Opening cell column in field
-	 * @return {CellPositionInField} cells - Neighbors of the cell
+	 * @return {CellModel} cells - Neighbors of the cell
 	 */
-	private getNeighbors (initRow: number, initColumn: number): CellPositionInField[] {
+	private getNeighbors (initRow: number, initColumn: number): CellModel[] {
 
 		const cells = [];
 
 		// Coordinates of first neighbor
-		let firstNeighborX = initRow - 1;
-		let firstNeighborY = initColumn - 1;
+		let firstNeighborRow = initRow - 1;
+		let firstNeighborColumn = initColumn - 1;
 
 		// Quantity of cells from top left cell
-		let endX = 3;
-		let endY = 3;
+		let endRow = 3;
+		let endColumn = 3;
 
 		// Limit coordinates by left and top field's borders
-		if (firstNeighborX === -1) {
-			firstNeighborX = 0;
-			endX = 2;
+		if (firstNeighborRow === -1) {
+			firstNeighborRow = 0;
+			endRow = 2;
 		}
-		if (firstNeighborY === -1) {
-			firstNeighborY = 0;
-			endY = 2;
+		if (firstNeighborColumn === -1) {
+			firstNeighborColumn = 0;
+			endColumn = 2;
 		}
 
 		// Limit quantity of cells by right and bottom field's borders
-		if (firstNeighborX === 8) {
-			endX = 2;
+		if (firstNeighborRow === 8) {
+			endRow = 2;
 		}
-		if (firstNeighborY === 8) {
-			endY = 2;
+		if (firstNeighborColumn === 8) {
+			endColumn = 2;
 		}
 
 		// Generate neighbor cells
-		for (let i = 0; i < endX; i++) {
-			for (let j = 0; j < endY; j++) {
-				cells.push({ row: firstNeighborX + i, column: firstNeighborY + j });
-			}
-		}
+		for (let i = 0; i < endRow; i++) {
+			for (let j = 0; j < endColumn; j++) {
+				const row = firstNeighborRow + i;
+				const column = firstNeighborColumn + j;
 
-		// Excluding cell itself from cell's neighbor
-		for (let i = 0; i < cells.length; i++) {
-			if (cells[i].row === initRow && cells[i].column === initColumn) {
-				cells.splice(i, 1);
-				break;
+				if (row !== initRow || column !== initColumn) { // Excluding cell itself from cell's neighbor
+					cells.push(this.getCell({ row, column }));
+				}
 			}
 		}
 
@@ -216,16 +214,12 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		this.emit(GameModel.EVENT_CELL_FLAG_UNSET, { row: x, column: y });
 	}
 
-	private isCellOpen(x: number, y: number): boolean {
-		return this.cells[x][y].isOpened();
-	}
-
-	private isCellMined(x: number, y: number): boolean {
-		return this.cells[x][y].isMined();
-	}
-
 	private isCellFlagged(x: number, y: number): boolean {
 		return this.cells[x][y].isFlagged();
+	}
+
+	private getCell({ row, column }: CellPositionInField): CellModel {
+		return this.cells[row][column];
 	}
 
 	/**
