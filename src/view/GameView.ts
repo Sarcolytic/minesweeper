@@ -2,6 +2,7 @@ import GameModel from '../model/GameModel';
 import CellView from './CellView';
 import { GameConstants } from '../utils/GameConstatnts';
 import { CellViewEvents } from './CellViewEvents';
+import Button from './components/Button';
 
 export default class GameView extends PIXI.Container {
 	public static readonly EVENT_PAUSE_BUTTON_CLICK: string = 'onPauseButtonClicked';
@@ -36,7 +37,7 @@ export default class GameView extends PIXI.Container {
 					position => this.emit(CellViewEvents.EVENT_RIGHT_CLICK, position),
 				);
 
-				cell.position.set(32 * i, 32 * j);
+				cell.position.set(CellView.CELL_SIZE * i, CellView.CELL_SIZE * j);
 				this.cells[i].push(cell);
 
 				fieldContainer.addChild(cell);
@@ -45,17 +46,9 @@ export default class GameView extends PIXI.Container {
 
 		fieldContainer.pivot.set(fieldContainer.width * 0.5, fieldContainer.height * 0.5);
 
-		const gameAssets = PIXI.loader.resources['game_assets'].textures;
-
-		const pauseButton = new PIXI.Sprite(gameAssets['button']);
-		pauseButton.interactive = true;
+		const pauseButton = new Button('PAUSE');
 		pauseButton.on('pointertap', () => { this.emit(GameView.EVENT_PAUSE_BUTTON_CLICK); });
 		pauseButton.position.set(800, GameConstants.GAME_CENTER_Y - 100);
-
-		const pauseLabel = new PIXI.extras.BitmapText('PAUSE', { font: '36px LibelSuit', tint: 0x000000 });
-		pauseLabel.anchor = 0.5;
-		pauseButton.addChild(pauseLabel);
-
 		this.addChild(pauseButton);
 	}
 
