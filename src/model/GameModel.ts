@@ -85,7 +85,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 		if (surroundingMines === 0) {
 			// Gather cell's neighbors and launch recursion
-			const neighbors = this.getNeighbors(x, y, true);
+			const neighbors = this.getNeighbors(x, y);
 
 			for (let i = 0; i < neighbors.length; i++) {
 				this.openCell(neighbors[i].x, neighbors[i].y, true);
@@ -132,7 +132,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	private countSurroundingMines(x: number, y: number): number {
 
 		// Get neighbors cells
-		const neighborsCells = this.getNeighbors(x, y, false);
+		const neighborsCells = this.getNeighbors(x, y);
 		let mines = 0;
 
 		for (let i = 0; i < neighborsCells.length; i++) {
@@ -150,7 +150,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	 * @param {Boolean} cross - Select vertical & horizontal cells only (except corner's cell)
 	 * @return {Cell} cells - Neighbors of the cell
 	 */
-	private getNeighbors (initX: number, initY: number, cross: boolean): any[] {
+	private getNeighbors (initX: number, initY: number): any[] {
 
 		const cells = [];
 
@@ -192,15 +192,6 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 			if (cells[i].x === initX && cells[i].y === initY) {
 				cells.splice(i, 1);
 				break;
-			}
-		}
-
-		// Excluding diagonals cells
-		if (cross) {
-			for (let i = 0; i < cells.length; i++) {
-				if (cells[i].x - initX === cells[i].y - initY) {
-					cells.splice(i, 1);
-				}
 			}
 		}
 
