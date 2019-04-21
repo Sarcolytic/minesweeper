@@ -6,7 +6,6 @@ export type CellPositionInField = {
 export default class CellModel extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_OPENED: string = 'onOpened';
 	public static readonly EVENT_MINED: string = 'onMined';
-	public static readonly EVENT_FLAG_SWITCHED: string = 'onFlagSwitched';
 
 	private readonly position: CellPositionInField;
 
@@ -56,8 +55,6 @@ export default class CellModel extends PIXI.utils.EventEmitter {
 
 	public setFlag(value: boolean): void {
 		this.flagged = value;
-
-		this.emit(CellModel.EVENT_FLAG_SWITCHED, value);
 	}
 
 	public isFlagged(): boolean {

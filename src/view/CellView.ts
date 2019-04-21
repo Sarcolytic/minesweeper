@@ -16,7 +16,6 @@ export default class CellView extends PIXI.Container {
 		this.model = model;
 		this.model.on(CellModel.EVENT_OPENED, this.onCellOpened, this);
 		this.model.on(CellModel.EVENT_MINED, this.onCellMined, this);
-		this.model.on(CellModel.EVENT_FLAG_SWITCHED, this.onToggleFlag, this);
 
 		this.assets = PIXI.loader.resources['game_assets'].textures;
 
@@ -44,10 +43,23 @@ export default class CellView extends PIXI.Container {
 		this.flagIcon.visible = false;
 		this.background.texture = this.assets['cell_close'];
 
+		this.on('click', this.onLeftClicked, this);
 		this.interactive = true;
 	}
 
+	public switchFlag(value: boolean): void {
+		this.flagIcon.visible = value;
+
+		if (value) {
+			this.off('click', this.onLeftClicked, this);
+		} else {
+			this.on('click', this.onLeftClicked, this);
+		}
+	}
+
 	public showMine(): void {
+		this.flagIcon.visible = false;
+
 		this.statusIcon.texture = this.assets['bomb'];
 		this.statusIcon.visible = true;
 	}
@@ -69,16 +81,6 @@ export default class CellView extends PIXI.Container {
 		}
 
 		this.interactive = false;
-	}
-
-	private onToggleFlag(value: boolean): void {
-		this.flagIcon.visible = value;
-
-		if (value) {
-			this.off('click', this.onLeftClicked, this);
-		} else {
-			this.on('click', this.onLeftClicked, this);
-		}
 	}
 
 	private onCellMined(): void {

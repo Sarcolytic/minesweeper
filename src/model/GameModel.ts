@@ -2,6 +2,8 @@ import CellModel, { CellPositionInField } from './CellModel';
 
 export default class GameModel extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_CELL_OPENED: string = 'onCellOpened';
+	public static readonly EVENT_CELL_FLAG_SET: string = 'onCellFlagSet';
+	public static readonly EVENT_CELL_FLAG_UNSET: string = 'onCellFlagUnset';
 	public static readonly EVENT_UPDATE_GAME_STATUS: string = 'onGameStatusUpdated';
 
 	public static readonly STATUS_WIN: string = 'WIN';
@@ -100,7 +102,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	public getNotOpenMinePositions(): CellPositionInField[] {
 		return this.cells
 			.flat()
-			.filter(cell => cell.isMined() && !cell.isFlagged())
+			.filter(cell => cell.isMined())
 			.map(cell => cell.getPosition());
 	}
 
@@ -215,10 +217,14 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 	private setFlag(x: number, y: number): void {
 		this.cells[x][y].setFlag(true);
+
+		this.emit(GameModel.EVENT_CELL_FLAG_SET, { row: x, column: y });
 	}
 
 	private unsetFlag(x: number, y: number): void {
 		this.cells[x][y].setFlag(false);
+
+		this.emit(GameModel.EVENT_CELL_FLAG_UNSET, { row: x, column: y });
 	}
 
 	private isCellOpen(x: number, y: number): boolean {
