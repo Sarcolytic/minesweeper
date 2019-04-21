@@ -1,6 +1,6 @@
 import GameModel from '../model/GameModel';
 import CellView from './CellView';
-import { GameConstants } from '../utils/GameConstatnts';
+import { GameConstants } from '../utils/GameConstants';
 import { CellViewEvents } from './CellViewEvents';
 import Button from './components/Button';
 

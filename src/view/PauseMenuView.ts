@@ -1,4 +1,4 @@
-import { GameConstants } from '../utils/GameConstatnts';
+import { GameConstants } from '../utils/GameConstants';
 import Button from './components/Button';
 
 export default class PauseMenuView extends PIXI.Container {
