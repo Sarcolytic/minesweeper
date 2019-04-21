@@ -3,7 +3,7 @@ import CellView from './CellView';
 import { GameConstants } from '../utils/GameConstants';
 import { CellViewEvents } from './CellViewEvents';
 import Button from './components/Button';
-import MineIndicator from './MineIndicator';
+import MineIndicatorView from './MineIndicatorView';
 import { CellPositionInField } from '../model/CellModel';
 
 export default class GameView extends PIXI.Container {
@@ -11,7 +11,7 @@ export default class GameView extends PIXI.Container {
 
 	private readonly model: GameModel;
 	private readonly cells: CellView[][];
-	private readonly mineIndicator: MineIndicator;
+	private readonly mineIndicator: MineIndicatorView;
 	private readonly gameStatus: PIXI.extras.BitmapText;
 
 	constructor(model: GameModel) {
@@ -57,10 +57,10 @@ export default class GameView extends PIXI.Container {
 		);
 
 		const pauseButton = new Button('PAUSE');
-		pauseButton.on('pointertap', () => { this.emit(GameView.EVENT_PAUSE_BUTTON_CLICK); });
+		pauseButton.on('click', () => { this.emit(GameView.EVENT_PAUSE_BUTTON_CLICK); });
 		pauseButton.position.set(800, GameConstants.GAME_CENTER_Y - 100);
 
-		this.mineIndicator = new MineIndicator();
+		this.mineIndicator = new MineIndicatorView();
 		this.mineIndicator.setCount(GameModel.MINES_COUNT);
 		this.mineIndicator.position.set(800, GameConstants.GAME_CENTER_Y);
 

@@ -1,4 +1,4 @@
-export default class MineIndicator extends PIXI.Container {
+export default class MineIndicatorView extends PIXI.Container {
 	private readonly count: PIXI.extras.BitmapText;
 	private value: number;
 
