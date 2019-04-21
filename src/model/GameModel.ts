@@ -42,24 +42,25 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 	/**
 	 * Open the cell
-	 * @param {Cell} cell - Opening cell
+	 * @param {number} row - Opening cell row in field
+	 * @param {number} column - Opening cell column in field
 	 * @param {Boolean} recursion - True if the function called in recursion
 	 * @return {Boolean} - False in case cell is already opened
 	 */
-	public openCell(x: number, y: number, recursion: boolean): boolean {
+	public openCell(row: number, column: number, recursion: boolean): boolean {
 
 		// Start the game
 		if (this.gameState === GameModel.STATE_INIT) {
-			this.digMines(GameModel.MINES_COUNT, x, y);
+			this.digMines(GameModel.MINES_COUNT, row, column);
 			this.updateGameState(GameModel.STATE_PLAYING);
 		}
 
-		if (this.isCellOpen(x, y) || this.isCellFlagged(x, y)) {
+		if (this.isCellOpen(row, column) || this.isCellFlagged(row, column)) {
 			return false;
 		}
 
 		// Change game state in case of mine detonating
-		if (this.isCellMined(x, y)) {
+		if (this.isCellMined(row, column)) {
 			if (!recursion) {
 				this.lose();
 				return false;
@@ -68,14 +69,14 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		}
 
 		// Counting quantity of surrounding mines
-		const surroundingMines = this.countSurroundingMines(x, y);
-		this.cells[x][y].setSurroundingMines(surroundingMines);
+		const surroundingMines = this.countSurroundingMines(row, column);
+		this.cells[row][column].setSurroundingMines(surroundingMines);
 
 		// Add cell to openCells
-		this.cells[x][y].setOpened();
+		this.cells[row][column].setOpened();
 		this.openedCellsCount++;
 
-		this.emit(GameModel.EVENT_CELL_OPENED, x, y);
+		this.emit(GameModel.EVENT_CELL_OPENED, row, column);
 
 		// Check for winning
 		if (this.isWin()) {
@@ -84,10 +85,10 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 		if (surroundingMines === 0) {
 			// Gather cell's neighbors and launch recursion
-			const neighbors = this.getNeighbors(x, y);
+			const neighbors = this.getNeighbors(row, column);
 
 			for (let i = 0; i < neighbors.length; i++) {
-				this.openCell(neighbors[i].x, neighbors[i].y, true);
+				this.openCell(neighbors[i].row, neighbors[i].column, true);
 			}
 		}
 
@@ -109,9 +110,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	 * Creates and digs mines
 	 */
 	private digMines(mines: number, initX: number, initY: number): void {
-
 		let i = 0;
-
 		do {
 			const x = Math.floor(Math.random() * mines);
 			const y = Math.floor(Math.random() * mines);
@@ -135,7 +134,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		let mines = 0;
 
 		for (let i = 0; i < neighborsCells.length; i++) {
-			if (this.isCellMined(neighborsCells[i].x, neighborsCells[i].y)) {
+			if (this.isCellMined(neighborsCells[i].row, neighborsCells[i].column)) {
 				mines++;
 			}
 		}
@@ -145,17 +144,17 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 	/**
 	 * Get neighbors of the cell
-	 * @param {Cell} cell - Coordinates of a cell
-	 * @param {Boolean} cross - Select vertical & horizontal cells only (except corner's cell)
-	 * @return {Cell} cells - Neighbors of the cell
+	 * @param {number} initRow - Opening cell row in field
+	 * @param {number} initColumn - Opening cell column in field
+	 * @return {CellPositionInField} cells - Neighbors of the cell
 	 */
-	private getNeighbors (initX: number, initY: number): any[] {
+	private getNeighbors (initRow: number, initColumn: number): CellPositionInField[] {
 
 		const cells = [];
 
 		// Coordinates of first neighbor
-		let firstNeighborX = initX - 1;
-		let firstNeighborY = initY - 1;
+		let firstNeighborX = initRow - 1;
+		let firstNeighborY = initColumn - 1;
 
 		// Quantity of cells from top left cell
 		let endX = 3;
@@ -182,13 +181,13 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		// Generate neighbor cells
 		for (let i = 0; i < endX; i++) {
 			for (let j = 0; j < endY; j++) {
-				cells.push({ x: firstNeighborX + i, y: firstNeighborY + j });
+				cells.push({ row: firstNeighborX + i, column: firstNeighborY + j });
 			}
 		}
 
 		// Excluding cell itself from cell's neighbor
 		for (let i = 0; i < cells.length; i++) {
-			if (cells[i].x === initX && cells[i].y === initY) {
+			if (cells[i].row === initRow && cells[i].column === initColumn) {
 				cells.splice(i, 1);
 				break;
 			}
