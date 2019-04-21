@@ -4,23 +4,24 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_CELL_OPENED: string = 'onCellOpened';
 	public static readonly EVENT_CELL_FLAG_SET: string = 'onCellFlagSet';
 	public static readonly EVENT_CELL_FLAG_UNSET: string = 'onCellFlagUnset';
-	public static readonly EVENT_UPDATE_GAME_STATUS: string = 'onGameStatusUpdated';
+	public static readonly EVENT_UPDATE_GAME_STATE: string = 'onGameStateUpdated';
 
-	public static readonly STATUS_WIN: string = 'WIN';
-	public static readonly STATUS_LOSE: string = 'LOSE';
-	public static readonly STATUS_PLAYING: string = 'PLAYING';
+	public static readonly STATE_INIT: string = 'INITIAL';
+	public static readonly STATE_PLAYING: string = 'PLAYING';
+	public static readonly STATE_WIN: string = 'WIN';
+	public static readonly STATE_LOSE: string = 'LOSE';
 
 	public static readonly FIELD_SIZE: number = 10;
 	public static readonly MINES_COUNT: number = 10;
 
-	private gameStatus: string;
+	private gameState: string;
 	private openedCellsCount: number;
 	private readonly cells: CellModel[][];
 
 	constructor() {
 		super();
 
-		this.gameStatus = GameModel.STATUS_PLAYING;
+		this.gameState = GameModel.STATE_INIT;
 		this.openedCellsCount = 0;
 
 		this.cells = [];
@@ -34,7 +35,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 	public reset(): void {
 		this.openedCellsCount = 0;
-		this.gameStatus = GameModel.STATUS_PLAYING;
+		this.gameState = GameModel.STATE_INIT;
 
 		this.cells.flat().forEach(cell => cell.reset());
 	}
@@ -48,17 +49,16 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	public openCell(x: number, y: number, recursion: boolean): boolean {
 
 		// Start the game
-		// TODO check status
-		if (this.openedCellsCount === 0) {
+		if (this.gameState === GameModel.STATE_INIT) {
 			this.digMines(GameModel.MINES_COUNT, x, y);
-			this.updateGameStatus(GameModel.STATUS_PLAYING);
+			this.updateGameState(GameModel.STATE_PLAYING);
 		}
 
 		if (this.isCellOpen(x, y) || this.isCellFlagged(x, y)) {
 			return false;
 		}
 
-		// Change game status in case of mine detonating
+		// Change game state in case of mine detonating
 		if (this.isCellMined(x, y)) {
 			if (!recursion) {
 				this.lose();
@@ -75,7 +75,6 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		this.cells[x][y].setOpened();
 		this.openedCellsCount++;
 
-		// Dispatching new eventDispatcher
 		this.emit(GameModel.EVENT_CELL_OPENED, x, y);
 
 		// Check for winning
@@ -234,24 +233,23 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	 * Lose the game
 	 */
 	private lose(): void {
-		this.updateGameStatus(GameModel.STATUS_LOSE);
+		this.updateGameState(GameModel.STATE_LOSE);
 	}
 
 	/**
 	 * Is player win?
-	 * @returns {boolean} Returns true in case of winning
 	 */
 	private isWin(): boolean {
 		if (this.openedCellsCount === GameModel.FIELD_SIZE ** 2 - GameModel.MINES_COUNT) {
-			this.updateGameStatus(GameModel.STATUS_WIN);
+			this.updateGameState(GameModel.STATE_WIN);
 			return true;
 
 		}
 		return false;
 	}
 
-	private updateGameStatus(newStatus: string): void {
-		this.gameStatus = newStatus;
-		this.emit(GameModel.EVENT_UPDATE_GAME_STATUS, newStatus);
+	private updateGameState(newState: string): void {
+		this.gameState = newState;
+		this.emit(GameModel.EVENT_UPDATE_GAME_STATE, newState);
 	}
 }

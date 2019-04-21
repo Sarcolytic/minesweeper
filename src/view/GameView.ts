@@ -12,13 +12,13 @@ export default class GameView extends PIXI.Container {
 	private readonly model: GameModel;
 	private readonly cells: CellView[][];
 	private readonly mineIndicator: MineIndicatorView;
-	private readonly gameStatus: PIXI.extras.BitmapText;
+	private readonly gameState: PIXI.extras.BitmapText;
 
 	constructor(model: GameModel) {
 		super();
 
 		this.model = model;
-		this.model.on(GameModel.EVENT_UPDATE_GAME_STATUS, this.onGameStatusUpdated, this);
+		this.model.on(GameModel.EVENT_UPDATE_GAME_STATE, this.onGameStateUpdated, this);
 		this.model.on(GameModel.EVENT_CELL_FLAG_SET, this.onCellFlagSet, this);
 		this.model.on(GameModel.EVENT_CELL_FLAG_UNSET, this.onCellFlagUnset, this);
 
@@ -64,14 +64,14 @@ export default class GameView extends PIXI.Container {
 		this.mineIndicator.setCount(GameModel.MINES_COUNT);
 		this.mineIndicator.position.set(800, GameConstants.GAME_CENTER_Y);
 
-		this.gameStatus = new PIXI.extras.BitmapText('', { font: '50px LibelSuit', tint: 0x00A517 });
-		this.gameStatus.anchor = 0.5;
-		this.gameStatus.position.set(GameConstants.GAME_CENTER_X, 50);
+		this.gameState = new PIXI.extras.BitmapText('', { font: '50px LibelSuit', tint: 0x00A517 });
+		this.gameState.anchor = 0.5;
+		this.gameState.position.set(GameConstants.GAME_CENTER_X, 50);
 
 		this.addChild(
 			pauseButton,
 			this.mineIndicator as PIXI.DisplayObject,
-			this.gameStatus,
+			this.gameState,
 		);
 	}
 
@@ -82,7 +82,7 @@ export default class GameView extends PIXI.Container {
 
 		this.mineIndicator.setCount(GameModel.MINES_COUNT);
 
-		this.gameStatus.text = '';
+		this.gameState.text = '';
 	}
 
 	private onCellFlagSet(position: CellPositionInField): void {
@@ -97,22 +97,22 @@ export default class GameView extends PIXI.Container {
 		this.mineIndicator.increase();
 	}
 
-	private onGameStatusUpdated(status: string): void {
-		if (status === GameModel.STATUS_LOSE) {
+	private onGameStateUpdated(state: string): void {
+		if (state === GameModel.STATE_LOSE) {
 			this.showLose();
-		} else if (status === GameModel.STATUS_WIN) {
+		} else if (state === GameModel.STATE_WIN) {
 			this.showWin();
 		}
 	}
 
 	private showWin(): void {
-		this.gameStatus.text = 'WIN';
-		this.gameStatus.tint = 0x00A517;
+		this.gameState.text = 'WIN';
+		this.gameState.tint = 0x00A517;
 	}
 
 	private showLose(): void {
-		this.gameStatus.text = 'LOSE';
-		this.gameStatus.tint = 0xDC0B0B;
+		this.gameState.text = 'LOSE';
+		this.gameState.tint = 0xDC0B0B;
 
 		this.showMines();
 	}
