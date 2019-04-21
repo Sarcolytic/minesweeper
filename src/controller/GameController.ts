@@ -15,6 +15,11 @@ export default class GameController {
 		this.view.on(CellViewEvents.EVENT_RIGHT_CLICK, this.onViewRightClick, this);
 	}
 
+	public resetGame(): void {
+		this.model.reset();
+		this.view.reset();
+	}
+
 	private onViewLeftClick(cellPosition: CellPositionInField): void {
 		this.model.openCell(cellPosition.row, cellPosition.column, false);
 	}

@@ -5,7 +5,7 @@ export default class CellView extends PIXI.Container {
 	private readonly model: CellModel;
 	private readonly assets: PIXI.loaders.TextureDictionary;
 	private readonly background: PIXI.Sprite;
-	private readonly flagIcon: PIXI.Sprite;
+	private readonly icon: PIXI.Sprite;
 
 	constructor(model: CellModel) {
 		super();
@@ -18,18 +18,28 @@ export default class CellView extends PIXI.Container {
 		this.assets = PIXI.loader.resources['game_assets'].textures;
 
 		this.background = new PIXI.Sprite(this.assets['cell_close']);
-
-		this.flagIcon = new PIXI.Sprite(this.assets['flag']);
-		this.flagIcon.visible = false;
+		this.icon = new PIXI.Sprite();
 
 		this.addChild(
 			this.background,
-			this.flagIcon,
+			this.icon,
 		);
 
 		this.interactive = true;
 		this.on('click', this.onLeftClicked, this);
 		this.on('rightclick', this.onRightClicked, this);
+	}
+
+	public reset(): void {
+		this.icon.texture = PIXI.Texture.EMPTY;
+
+		this.background.texture = this.assets['cell_close'];
+
+		this.interactive = true;
+	}
+
+	public showMine(): void {
+		this.icon.texture = this.assets['bomb'];
 	}
 
 	private onLeftClicked(): void {
@@ -44,14 +54,14 @@ export default class CellView extends PIXI.Container {
 		this.background.texture = this.assets['cell_open'];
 
 		if (surroundingMines > 0) {
-			this.addChild(new PIXI.Sprite(this.assets[`${surroundingMines}`]));
+			this.icon.texture = this.assets[`${surroundingMines}`];
 		}
 
 		this.interactive = false;
 	}
 
 	private onToggleFlag(value: boolean): void {
-		this.flagIcon.visible = value;
+		this.icon.texture = this.assets['flag'];
 
 		if (value) {
 			this.off('click', this.onLeftClicked, this);
@@ -61,6 +71,6 @@ export default class CellView extends PIXI.Container {
 	}
 
 	private onCellMined(): void {
-		this.addChild(new PIXI.Sprite(this.assets['bomb']));
+		// this.addChild(new PIXI.Sprite(this.assets['bomb']));
 	}
 }

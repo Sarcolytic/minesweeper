@@ -20,6 +20,10 @@ export default class CellModel extends PIXI.utils.EventEmitter {
 
 		this.position = { row, column };
 
+		this.reset();
+	}
+
+	public reset(): void {
 		this.surroundingMines = 0;
 		this.mined = false;
 		this.opened = false;

@@ -1,14 +1,15 @@
-import CellModel from './CellModel';
+import CellModel, { CellPositionInField } from './CellModel';
 
 export default class GameModel extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_CELL_OPENED: string = 'onCellOpened';
+	public static readonly EVENT_UPDATE_GAME_STATUS: string = 'onGameStatusUpdated';
 
-	private static readonly MINES_COUNT: number = 10;
+	public static readonly STATUS_WIN: string = 'WIN';
+	public static readonly STATUS_LOSE: string = 'LOSE';
+	public static readonly STATUS_PLAYING: string = 'PLAYING';
+
 	public static readonly FIELD_SIZE: number = 10;
-
-	private static readonly STATUS_WIN: string = 'WIN';
-	private static readonly STATUS_LOSE: string = 'LOSE';
-	private static readonly STATUS_PLAYING: string = 'PLAYING';
+	public static readonly MINES_COUNT: number = 10;
 
 	private gameStatus: string;
 	private openedCellsCount: number;
@@ -27,6 +28,13 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 				this.cells[i][j] = new CellModel(i, j);
 			}
 		}
+	}
+
+	public reset(): void {
+		this.openedCellsCount = 0;
+		this.gameStatus = GameModel.STATUS_PLAYING;
+
+		this.cells.flat().forEach(cell => cell.reset());
 	}
 
 	/**
@@ -87,6 +95,13 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 	public getField(): CellModel[][] {
 		return this.cells;
+	}
+
+	public getNotOpenMinePositions(): CellPositionInField[] {
+		return this.cells
+			.flat()
+			.filter(cell => cell.isMined() && !cell.isFlagged())
+			.map(cell => cell.getPosition());
 	}
 
 	/**
@@ -240,7 +255,6 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 
 	private updateGameStatus(newStatus: string): void {
 		this.gameStatus = newStatus;
-		// this.eventDispatcher.dispatchEvent(new StatusEvent(MinesweeperGame.EVENT_UPDATE_GAME_STATUS, newStatus));
-
+		this.emit(GameModel.EVENT_UPDATE_GAME_STATUS, newStatus);
 	}
 }
