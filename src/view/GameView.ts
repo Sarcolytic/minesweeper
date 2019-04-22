@@ -2,9 +2,9 @@ import GameModel from '../model/GameModel';
 import CellView from './CellView';
 import { GameConstants } from '../utils/GameConstants';
 import { CellViewEvents } from './CellViewEvents';
+import { CellPositionInField } from '../model/CellPositionInField';
 import Button from './components/Button';
 import MineIndicatorView from './MineIndicatorView';
-import { CellPositionInField } from '../model/CellPositionInField';
 
 export default class GameView extends PIXI.Container {
 	public static readonly EVENT_PAUSE_BUTTON_CLICK: string = 'onPauseButtonClicked';
@@ -19,6 +19,7 @@ export default class GameView extends PIXI.Container {
 
 		this.model = model;
 		this.model.on(GameModel.EVENT_UPDATE_GAME_STATE, this.onGameStateUpdated, this);
+		this.model.on(GameModel.EVENT_CELL_OPENED, this.onCellOpened, this);
 		this.model.on(GameModel.EVENT_CELL_FLAG_SET, this.onCellFlagSet, this);
 		this.model.on(GameModel.EVENT_CELL_FLAG_UNSET, this.onCellFlagUnset, this);
 
@@ -33,7 +34,7 @@ export default class GameView extends PIXI.Container {
 			this.cells[i] = [];
 
 			for (let j = 0; j < field[i].length; j++) {
-				const cell = new CellView(field[i][j]);
+				const cell = new CellView(field[i][j].getPosition());
 				cell.on(
 					CellViewEvents.EVENT_LEFT_CLICK,
 					position => this.emit(CellViewEvents.EVENT_LEFT_CLICK, position),
@@ -85,6 +86,18 @@ export default class GameView extends PIXI.Container {
 		this.gameState.text = '';
 	}
 
+	private onGameStateUpdated(state: string): void {
+		if (state === GameModel.STATE_LOSE) {
+			this.showLose();
+		} else if (state === GameModel.STATE_WIN) {
+			this.showWin();
+		}
+	}
+
+	private onCellOpened(position: CellPositionInField, surroundingMines: number): void {
+		this.getCell(position).open(surroundingMines);
+	}
+
 	private onCellFlagSet(position: CellPositionInField): void {
 		this.getCell(position).switchFlag(true);
 
@@ -95,14 +108,6 @@ export default class GameView extends PIXI.Container {
 		this.getCell(position).switchFlag(false);
 
 		this.mineIndicator.increase();
-	}
-
-	private onGameStateUpdated(state: string): void {
-		if (state === GameModel.STATE_LOSE) {
-			this.showLose();
-		} else if (state === GameModel.STATE_WIN) {
-			this.showWin();
-		}
 	}
 
 	private showWin(): void {

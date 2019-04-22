@@ -1,20 +1,19 @@
-import CellModel from '../model/CellModel';
 import { CellViewEvents } from './CellViewEvents';
+import { CellPositionInField } from '../model/CellPositionInField';
 
 export default class CellView extends PIXI.Container {
 	public static readonly CELL_SIZE: number = 32;
 
-	private readonly model: CellModel;
+	private readonly positionInField: CellPositionInField;
 	private readonly assets: PIXI.loaders.TextureDictionary;
 	private readonly background: PIXI.Sprite;
 	private readonly flagIcon: PIXI.Sprite;
 	private readonly statusIcon: PIXI.Sprite;
 
-	constructor(model: CellModel) {
+	constructor(position: CellPositionInField) {
 		super();
 
-		this.model = model;
-		this.model.on(CellModel.EVENT_OPENED, this.onCellOpened, this);
+		this.positionInField = position;
 
 		this.assets = PIXI.loader.resources['game_assets'].textures;
 
@@ -46,6 +45,17 @@ export default class CellView extends PIXI.Container {
 		this.interactive = true;
 	}
 
+	public open(surroundingMines: number): void {
+		this.background.texture = this.assets['cell_open'];
+
+		if (surroundingMines > 0) {
+			this.statusIcon.texture = this.assets[`${surroundingMines}`];
+			this.statusIcon.visible = true;
+		}
+
+		this.interactive = false;
+	}
+
 	public switchFlag(value: boolean): void {
 		this.flagIcon.visible = value;
 
@@ -64,21 +74,10 @@ export default class CellView extends PIXI.Container {
 	}
 
 	private onLeftClicked(): void {
-		this.emit(CellViewEvents.EVENT_LEFT_CLICK, this.model.getPosition());
+		this.emit(CellViewEvents.EVENT_LEFT_CLICK, this.positionInField);
 	}
 
 	private onRightClicked(): void {
-		this.emit(CellViewEvents.EVENT_RIGHT_CLICK, this.model.getPosition());
-	}
-
-	private onCellOpened(surroundingMines: number): void {
-		this.background.texture = this.assets['cell_open'];
-
-		if (surroundingMines > 0) {
-			this.statusIcon.texture = this.assets[`${surroundingMines}`];
-			this.statusIcon.visible = true;
-		}
-
-		this.interactive = false;
+		this.emit(CellViewEvents.EVENT_RIGHT_CLICK, this.positionInField);
 	}
 }

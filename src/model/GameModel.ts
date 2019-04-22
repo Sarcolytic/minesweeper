@@ -41,6 +41,10 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		this.cells.flat().forEach(cell => cell.reset());
 	}
 
+	public getField(): CellModel[][] {
+		return this.cells;
+	}
+
 	/**
 	 * Open the cell
 	 * @param {CellPositionInField} position - Opening cell position
@@ -77,8 +81,7 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		// Add cell to openCells
 		cell.setOpened();
 		this.openedCellsCount++;
-
-		this.emit(GameModel.EVENT_CELL_OPENED, position);
+		this.emit(GameModel.EVENT_CELL_OPENED, position, surroundingMines);
 
 		// Check for winning
 		if (this.isWin()) {
@@ -95,8 +98,15 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		}
 	}
 
-	public getField(): CellModel[][] {
-		return this.cells;
+	public switchFlag(position: CellPositionInField): void {
+		const cell = this.getCell(position);
+		if (cell.isFlagged()) {
+			cell.setFlag(false);
+			this.emit(GameModel.EVENT_CELL_FLAG_UNSET, position);
+		} else {
+			cell.setFlag(true);
+			this.emit(GameModel.EVENT_CELL_FLAG_SET, position);
+		}
 	}
 
 	public getNotOpenMinePositions(): CellPositionInField[] {
@@ -188,17 +198,6 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		}
 
 		return cells;
-	}
-
-	public switchFlag(position: CellPositionInField): void {
-		const cell = this.getCell(position);
-		if (cell.isFlagged()) {
-			cell.setFlag(false);
-			this.emit(GameModel.EVENT_CELL_FLAG_UNSET, position);
-		} else {
-			cell.setFlag(true);
-			this.emit(GameModel.EVENT_CELL_FLAG_SET, position);
-		}
 	}
 
 	private getCell({ row, column }: CellPositionInField): CellModel {

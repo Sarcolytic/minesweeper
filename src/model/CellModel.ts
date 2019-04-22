@@ -1,8 +1,6 @@
 import { CellPositionInField } from './CellPositionInField';
 
-export default class CellModel extends PIXI.utils.EventEmitter {
-	public static readonly EVENT_OPENED: string = 'onOpened';
-
+export default class CellModel {
 	private readonly position: CellPositionInField;
 
 	private surroundingMines: number;
@@ -11,8 +9,6 @@ export default class CellModel extends PIXI.utils.EventEmitter {
 	private flagged: boolean;
 
 	constructor(row: number, column: number) {
-		super();
-
 		this.position = { row, column };
 
 		this.reset();
@@ -39,8 +35,6 @@ export default class CellModel extends PIXI.utils.EventEmitter {
 
 	public setOpened(): void {
 		this.opened = true;
-
-		this.emit(CellModel.EVENT_OPENED, this.surroundingMines);
 	}
 
 	public isOpened(): boolean {
