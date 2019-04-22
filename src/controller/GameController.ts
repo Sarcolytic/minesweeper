@@ -1,7 +1,7 @@
 import GameModel from '../model/GameModel';
 import GameView from '../view/GameView';
 import { CellViewEvents } from '../view/CellViewEvents';
-import { CellPositionInField } from '../model/CellModel';
+import { CellPositionInField } from '../model/CellPositionInField';
 
 export default class GameController {
 	private readonly model: GameModel;

@@ -1,4 +1,5 @@
-import CellModel, { CellPositionInField } from './CellModel';
+import CellModel from './CellModel';
+import { CellPositionInField } from './CellPositionInField';
 
 export default class GameModel extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_CELL_OPENED: string = 'onCellOpened';

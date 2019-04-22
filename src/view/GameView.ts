@@ -4,7 +4,7 @@ import { GameConstants } from '../utils/GameConstants';
 import { CellViewEvents } from './CellViewEvents';
 import Button from './components/Button';
 import MineIndicatorView from './MineIndicatorView';
-import { CellPositionInField } from '../model/CellModel';
+import { CellPositionInField } from '../model/CellPositionInField';
 
 export default class GameView extends PIXI.Container {
 	public static readonly EVENT_PAUSE_BUTTON_CLICK: string = 'onPauseButtonClicked';

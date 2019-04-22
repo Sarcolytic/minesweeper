@@ -1,7 +1,4 @@
-export type CellPositionInField = {
-	row: number,
-	column: number,
-};
+import { CellPositionInField } from './CellPositionInField';
 
 export default class CellModel extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_OPENED: string = 'onOpened';
