@@ -25,6 +25,6 @@ export default class GameController {
 	}
 
 	private onViewRightClick(cellPosition: CellPositionInField): void {
-		this.model.switchFlag(cellPosition.row, cellPosition.column);
+		this.model.switchFlag(cellPosition);
 	}
 }

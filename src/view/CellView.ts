@@ -15,7 +15,6 @@ export default class CellView extends PIXI.Container {
 
 		this.model = model;
 		this.model.on(CellModel.EVENT_OPENED, this.onCellOpened, this);
-		this.model.on(CellModel.EVENT_MINED, this.onCellMined, this);
 
 		this.assets = PIXI.loader.resources['game_assets'].textures;
 
@@ -81,9 +80,5 @@ export default class CellView extends PIXI.Container {
 		}
 
 		this.interactive = false;
-	}
-
-	private onCellMined(): void {
-		// this.addChild(new PIXI.Sprite(this.assets['bomb']));
 	}
 }

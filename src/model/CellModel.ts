@@ -5,7 +5,6 @@ export type CellPositionInField = {
 
 export default class CellModel extends PIXI.utils.EventEmitter {
 	public static readonly EVENT_OPENED: string = 'onOpened';
-	public static readonly EVENT_MINED: string = 'onMined';
 
 	private readonly position: CellPositionInField;
 
@@ -35,8 +34,6 @@ export default class CellModel extends PIXI.utils.EventEmitter {
 
 	public setMined(): void {
 		this.mined = true;
-
-		this.emit(CellModel.EVENT_MINED);
 	}
 
 	public isMined(): boolean {
@@ -63,9 +60,5 @@ export default class CellModel extends PIXI.utils.EventEmitter {
 
 	public setSurroundingMines(value: number): void {
 		this.surroundingMines = value;
-	}
-
-	public getSurroundingMines(): number {
-		return this.surroundingMines;
 	}
 }
