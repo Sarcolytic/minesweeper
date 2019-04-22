@@ -18,9 +18,7 @@ module.exports = merge(common, {
 	plugins: [
 		new webpackClean([outputFolder]),
 		new webpackCopyPlugin([
-			{ from: path.resolve(__dirname, './assets/css'), to: path.resolve(__dirname, `${outputFolder}/assets/css`) },
-			{ from: path.resolve(__dirname, './assets/img/game_assets.json'), to: path.resolve(__dirname, `${outputFolder}/assets/img/game_assets.json`) },
-			{ from: path.resolve(__dirname, './assets/img/game_assets.png'), to: path.resolve(__dirname, `${outputFolder}/assets/img/game_assets.png`) }
+			{ from: path.resolve(__dirname, './assets'), to: path.resolve(__dirname, `${outputFolder}/assets`) },
 		]),
 		new webpackHtmlPlugin({
 			template: path.resolve(__dirname, './template.html'),
