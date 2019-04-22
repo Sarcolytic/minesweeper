@@ -2,7 +2,6 @@
 node_modules/
 /dist/
 /build/
-/WebContent/assets/video
 npm-debug.log*
 Thumbs.db
 
