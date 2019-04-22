@@ -38,7 +38,9 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 		this.openedCellsCount = 0;
 		this.gameState = GameModel.STATE_INIT;
 
-		this.cells.flat().forEach(cell => cell.reset());
+		this.cells.forEach((cellRow) => {
+			cellRow.forEach(cell => cell.reset());
+		});
 	}
 
 	public getField(): CellModel[][] {
@@ -110,10 +112,16 @@ export default class GameModel extends PIXI.utils.EventEmitter {
 	}
 
 	public getNotOpenMinePositions(): CellPositionInField[] {
-		return this.cells
-			.flat()
-			.filter(cell => cell.isMined())
-			.map(cell => cell.getPosition());
+		const minePositions: CellPositionInField[] = [];
+
+		this.cells.forEach((cellRow) => {
+			cellRow.forEach((cell) => {
+				if (cell.isMined()) {
+					minePositions.push(cell.getPosition());
+				}
+			});
+		});
+		return minePositions;
 	}
 
 	/**

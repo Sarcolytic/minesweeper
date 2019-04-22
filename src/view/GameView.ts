@@ -77,9 +77,9 @@ export default class GameView extends PIXI.Container {
 	}
 
 	public reset(): void {
-		this.cells
-			.flat()
-			.forEach(cell => cell.reset());
+		this.cells.forEach((cellRow) => {
+			cellRow.forEach(cell => cell.reset());
+		});
 
 		this.mineIndicator.setCount(GameModel.MINES_COUNT);
 
