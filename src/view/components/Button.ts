@@ -1,8 +1,10 @@
-export default class Button extends PIXI.Sprite {
-	constructor(label: string) {
-		super(PIXI.loader.resources['game_assets'].textures['button']);
+import { Sprite, BitmapText, Loader } from 'pixi.js';
 
-		const buttonLabel = new PIXI.extras.BitmapText(label, { font: '36px LibelSuit', tint: 0x000000 });
+export default class Button extends Sprite {
+	constructor(label: string) {
+		super(Loader.shared.resources['game_assets'].textures['button']);
+
+		const buttonLabel = new BitmapText(label, { font: { size: 36, name: 'LibelSuit' }, tint: 0x000000 });
 		buttonLabel.anchor = 0.5;
 		this.addChild(buttonLabel);
 

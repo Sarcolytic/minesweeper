@@ -1,7 +1,8 @@
+import { utils } from 'pixi.js';
 import CellModel from './CellModel';
 import { CellPositionInField } from './CellPositionInField';
 
-export default class GameModel extends PIXI.utils.EventEmitter {
+export default class GameModel extends utils.EventEmitter {
 	public static readonly EVENT_CELL_OPENED: string = 'onCellOpened';
 	public static readonly EVENT_CELL_FLAG_SET: string = 'onCellFlagSet';
 	public static readonly EVENT_CELL_FLAG_UNSET: string = 'onCellFlagUnset';

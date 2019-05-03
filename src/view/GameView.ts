@@ -1,3 +1,4 @@
+import { Container, BitmapText, DisplayObject } from 'pixi.js';
 import GameModel from '../model/GameModel';
 import CellView from './CellView';
 import { GameConstants } from '../utils/GameConstants';
@@ -6,13 +7,13 @@ import { CellPositionInField } from '../model/CellPositionInField';
 import Button from './components/Button';
 import MineIndicatorView from './MineIndicatorView';
 
-export default class GameView extends PIXI.Container {
+export default class GameView extends Container {
 	public static readonly EVENT_PAUSE_BUTTON_CLICK: string = 'onPauseButtonClicked';
 
 	private readonly model: GameModel;
 	private readonly cells: CellView[][];
 	private readonly mineIndicator: MineIndicatorView;
-	private readonly gameState: PIXI.extras.BitmapText;
+	private readonly gameState: BitmapText;
 
 	constructor(model: GameModel) {
 		super();
@@ -25,7 +26,7 @@ export default class GameView extends PIXI.Container {
 
 		this.cells = [];
 
-		const fieldContainer = new PIXI.Container();
+		const fieldContainer = new Container();
 		fieldContainer.position.set(GameConstants.GAME_CENTER_X, GameConstants.GAME_CENTER_Y);
 		this.addChild(fieldContainer);
 
@@ -37,11 +38,11 @@ export default class GameView extends PIXI.Container {
 				const cell = new CellView(field[i][j].getPosition());
 				cell.on(
 					CellViewEvents.EVENT_LEFT_CLICK,
-					position => this.emit(CellViewEvents.EVENT_LEFT_CLICK, position),
+					(position: CellPositionInField) => this.emit(CellViewEvents.EVENT_LEFT_CLICK, position),
 				);
 				cell.on(
 					CellViewEvents.EVENT_RIGHT_CLICK,
-					position => this.emit(CellViewEvents.EVENT_RIGHT_CLICK, position),
+					(position: CellPositionInField) => this.emit(CellViewEvents.EVENT_RIGHT_CLICK, position),
 				);
 
 				cell.position.set(CellView.CELL_SIZE * i, CellView.CELL_SIZE * j);
@@ -65,13 +66,13 @@ export default class GameView extends PIXI.Container {
 		this.mineIndicator.setCount(GameModel.MINES_COUNT);
 		this.mineIndicator.position.set(800, GameConstants.GAME_CENTER_Y);
 
-		this.gameState = new PIXI.extras.BitmapText('', { font: '50px LibelSuit', tint: 0x00A517 });
+		this.gameState = new BitmapText('', { font: { size: 50, name: 'LibelSuit' }, tint: 0x00A517 });
 		this.gameState.anchor = 0.5;
 		this.gameState.position.set(GameConstants.GAME_CENTER_X, 50);
 
 		this.addChild(
 			pauseButton,
-			this.mineIndicator as PIXI.DisplayObject,
+			this.mineIndicator as DisplayObject,
 			this.gameState,
 		);
 	}

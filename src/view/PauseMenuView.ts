@@ -1,7 +1,8 @@
+import { Container } from 'pixi.js';
 import { GameConstants } from '../utils/GameConstants';
 import Button from './components/Button';
 
-export default class PauseMenuView extends PIXI.Container {
+export default class PauseMenuView extends Container {
 	public static readonly EVENT_CONTINUE_BUTTON_CLICK: string = 'onContinueButtonClick';
 	public static readonly EVENT_MAIN_MENU_BUTTON_CLICK: string = 'onNewGameButtonClick';
 

@@ -1,4 +1,4 @@
-import 'PIXI';
+import { Application, TilingSprite, Loader } from 'pixi.js';
 import Preloader from './controller/Preloader';
 import MainMenuView from './view/MainMenuView';
 import { GameConstants, GameScenes } from './utils/GameConstants';
@@ -13,16 +13,18 @@ window.onload = () => {
 };
 
 class Game {
-	private app: PIXI.Application;
+	private app: Application;
 	private scenesController: GameScenesController;
 	private gameController: GameController;
 
 	constructor() {
 		const appOptions = {
+			width: GameConstants.GAME_WIDTH,
+			height: GameConstants.GAME_HEIGHT,
 			backgroundColor: 0x000000,
 			view: document.getElementById('game') as HTMLCanvasElement,
 		};
-		this.app = new PIXI.Application(GameConstants.GAME_WIDTH, GameConstants.GAME_HEIGHT, appOptions);
+		this.app = new Application(appOptions);
 		this.app.view.addEventListener('contextmenu', event => event.preventDefault());
 
 		this.scenesController = new GameScenesController(this.app.stage);
@@ -32,8 +34,8 @@ class Game {
 	}
 
 	private onGameResourcedLoaded(): void {
-		const gameBg = new PIXI.extras.TilingSprite(
-			PIXI.loader.resources['game_assets'].textures['game_bg'],
+		const gameBg = new TilingSprite(
+			Loader.shared.resources['game_assets'].textures['game_bg'],
 			GameConstants.GAME_WIDTH,
 			GameConstants.GAME_HEIGHT,
 		);

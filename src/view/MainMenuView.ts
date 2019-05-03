@@ -1,13 +1,14 @@
+import { Container, BitmapText, DisplayObject } from 'pixi.js';
 import { GameConstants } from '../utils/GameConstants';
 import Button from './components/Button';
 
-export default class MainMenuView extends PIXI.Container {
+export default class MainMenuView extends Container {
 	public static readonly EVENT_BUTTON_CLICK: string = 'onButtonClicked';
 
 	constructor() {
 		super();
 
-		const gameName = new PIXI.extras.BitmapText('MINESWEEPER', { font: '50px LibelSuit', tint: 0x000000 });
+		const gameName = new BitmapText('MINESWEEPER', { font: { size: 50, name: 'LibelSuit' }, tint: 0x000000 });
 		gameName.anchor = 0.5;
 		gameName.position.set(GameConstants.GAME_CENTER_X, 120);
 
@@ -17,7 +18,7 @@ export default class MainMenuView extends PIXI.Container {
 
 		this.addChild(
 			gameName,
-			playButton as PIXI.DisplayObject,
+			playButton as DisplayObject,
 		);
 	}
 }

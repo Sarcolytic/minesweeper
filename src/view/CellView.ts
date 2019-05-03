@@ -1,28 +1,29 @@
+import { Sprite, ITextureDictionary, Container, Loader } from 'pixi.js';
 import { CellViewEvents } from './CellViewEvents';
 import { CellPositionInField } from '../model/CellPositionInField';
 
-export default class CellView extends PIXI.Container {
+export default class CellView extends Container {
 	public static readonly CELL_SIZE: number = 32;
 
 	private readonly positionInField: CellPositionInField;
-	private readonly assets: PIXI.loaders.TextureDictionary;
-	private readonly background: PIXI.Sprite;
-	private readonly flagIcon: PIXI.Sprite;
-	private readonly statusIcon: PIXI.Sprite;
+	private readonly assets: ITextureDictionary;
+	private readonly background: Sprite;
+	private readonly flagIcon: Sprite;
+	private readonly statusIcon: Sprite;
 
 	constructor(position: CellPositionInField) {
 		super();
 
 		this.positionInField = position;
 
-		this.assets = PIXI.loader.resources['game_assets'].textures;
+		this.assets = Loader.shared.resources['game_assets'].textures;
 
-		this.background = new PIXI.Sprite(this.assets['cell_close']);
+		this.background = new Sprite(this.assets['cell_close']);
 
-		this.flagIcon = new PIXI.Sprite(this.assets['flag']);
+		this.flagIcon = new Sprite(this.assets['flag']);
 		this.flagIcon.visible = false;
 
-		this.statusIcon = new PIXI.Sprite(this.assets['1']);
+		this.statusIcon = new Sprite(this.assets['1']);
 		this.statusIcon.visible = false;
 
 		this.addChild(

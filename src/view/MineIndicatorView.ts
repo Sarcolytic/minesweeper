@@ -1,20 +1,22 @@
-export default class MineIndicatorView extends PIXI.Container {
-	private readonly count: PIXI.extras.BitmapText;
+import { Sprite, BitmapText, Point, Container, DisplayObject, Loader } from 'pixi.js';
+
+export default class MineIndicatorView extends Container {
+	private readonly count: BitmapText;
 	private value: number;
 
 	constructor() {
 		super();
 
-		const icon = new PIXI.Sprite(PIXI.loader.resources['game_assets'].textures['bomb']);
+		const icon = new Sprite(Loader.shared.resources['game_assets'].textures['bomb']);
 		icon.anchor.set(1, 0.5);
 
-		this.count = new PIXI.extras.BitmapText('', { font: '28px LibelSuit', tint: 0x000000 });
-		this.count.anchor = new PIXI.Point(0, 0.5);
+		this.count = new BitmapText('', { font: { size: 28, name: 'LibelSuit' }, tint: 0x000000 });
+		this.count.anchor = new Point(0, 0.5);
 		this.count.x = 10;
 
 		this.addChild(
 			icon,
-			this.count as PIXI.DisplayObject,
+			this.count as DisplayObject,
 		);
 	}
 
